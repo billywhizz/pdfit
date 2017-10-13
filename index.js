@@ -132,6 +132,35 @@ function split(base64) {
 	})
 }
 
+function info(base64) {
+	return new Promise(resolve => {
+		const buffer = new Buffer(base64, 'base64')
+		const pdfReader = createReader(new PDFRStreamForBuffer(buffer))
+		const pageCount = pdfReader.getPagesCount()
+		const level = pdfReader.getPDFLevel()
+		const trailer = pdfReader.getTrailer()
+		const objects = pdfReader.getObjectsCount()
+		const encrypted = pdfReader.isEncrypted()
+		let nextPage = 0
+		const pages = []
+		while (nextPage < pageCount) {
+			const page = pdfReader.parsePage(nextPage)
+			const dictionary = page.getDictionary()
+			pages.push({
+				media: page.getMediaBox(),
+				crop: page.getCropBox(),
+				trim: page.getTrimBox(),
+				bleed: page.getBleedBox(),
+				art: page.getArtBox(),
+				rotation: page.getRotate(),
+				keys: Object.keys(dictionary)
+			})
+			nextPage++
+		}
+		resolve({ pageCount, level, trailer, objects, encrypted, pages })
+	})
+}
+
 function countPages(base64) {
 	return new Promise(resolve => {
 		const buffer = new Buffer(base64, 'base64')
@@ -168,6 +197,7 @@ module.exports = {
 	split,
 	duplicate,
 	countPages,
+	info,
 	createReader,
 	createWriter,
 	PDFWStreamForBuffer,

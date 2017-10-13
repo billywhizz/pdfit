@@ -1,6 +1,6 @@
 const should = require('should') // eslint-disable-line no-unused-vars
 const { promisify } = require('util')
-const { split, duplicate, countPages } = require('../')
+const { split, duplicate, countPages, info } = require('../')
 const { readFile } = require('fs')
 const { join } = require('path')
 
@@ -60,6 +60,23 @@ describe('The "pdf" module: /lib/pdf', () => { // eslint-disable-line no-undef
 		const { document } = await duplicate(doc, 0)
 		pages = await countPages(document)
 		pages.should.equal(1)
+	})
+
+	it('should get correct info for 1 page document', async () => { // eslint-disable-line no-undef
+		const doc = (await readFileAsync(`${fixtures}/single.pdf`)).toString('base64')
+		const pdfInfo = await info(doc)
+		pdfInfo.should.have.properties(['pageCount', 'level', 'trailer', 'objects', 'encrypted', 'pages'])
+		pdfInfo.pageCount.should.equal(1)
+		pdfInfo.level.should.equal(1.4)
+		pdfInfo.objects.should.equal(98)
+		pdfInfo.encrypted.should.equal(false)
+		pdfInfo.pages.should.be.Array()
+		pdfInfo.pages.length.should.equal(1)
+		for (const page of pdfInfo.pages) {
+			page.should.have.properties(['media', 'crop', 'trim', 'bleed', 'art', 'rotation', 'keys'])
+			page.rotation.should.equal(0)
+			page.media.should.be.eql([0, 0, 612, 792])
+		}
 	})
 
 })
