@@ -1,0 +1,21 @@
+{
+  "name": "pdfit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/_mocha --reporter spec tests/*.spec.js",
+    "cover": "nyc ./node_modules/mocha/bin/_mocha --reporter spec tests/*.spec.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "hummus": "^1.0.83",
+    "memory-streams": "^0.1.2"
+  },
+  "devDependencies": {
+    "mocha": "^4.0.1",
+    "nyc": "^11.2.1",
+    "should": "^13.1.2"
+  }
+}
